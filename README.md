@@ -263,5 +263,10 @@ JPEG_q30` for a quick check) instead of the full 15-condition sweep.
 
 ## Team
 
-- [Name] — [contribution]
-- [Name] — [contribution]
+- Jin Han — Model architecture and training. DINOv2 + LoRA backbone,
+  SRM residual branch, fusion head, and the training pipeline.
+- Jia Jun — Data pipeline and alignment. Dataset adapters, SID_Set
+  ingestion, and the Dual Data Alignment implementation.
+- Jun Xiang — Evaluation and analysis. Required-transform augmentation
+  spec, the 15-condition robustness harness, error analysis, and the
+  dataset-bias audit.
