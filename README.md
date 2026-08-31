@@ -238,6 +238,28 @@ damaging to F.Acc specifically. See `results/robustness_table.md` after
 running it. Use `--conditions` to run a subset (e.g. `--conditions Clean
 JPEG_q30` for a quick check) instead of the full 15-condition sweep.
 
+**SAMPLE ROBUSTNESS TABLE** : Each condition is evaluated in isolation against the clean baseline — never combined — following AIGIBench's (NeurIPS 2025 D&B) methodology. R.Acc/F.Acc are reported separately because overall accuracy can look fine while F.Acc (fake-detection accuracy) has actually collapsed.
+
+| Condition | R.Acc | F.Acc | ΔF.Acc vs Clean | Accuracy | AUC |
+|---|---|---|---|---|---|
+| Clean | 0.9600 | 0.9967 | +0.0000 | 0.9783 | 0.9994 |
+| JPEG_q90 | 0.9533 | 1.0000 | +0.0033 | 0.9767 | 0.9994 |
+| JPEG_q70 | 0.9533 | 1.0000 | +0.0033 | 0.9767 | 0.9995 |
+| JPEG_q50 | 0.9500 | 0.9967 | +0.0000 | 0.9733 | 0.9986 |
+| JPEG_q30 | 0.9267 | 0.9933 | -0.0033 | 0.9600 | 0.9978 |
+| Blur_sigma0.5 | 0.9600 | 1.0000 | +0.0033 | 0.9800 | 0.9995 |
+| Blur_sigma1.0 | 0.9433 | 1.0000 | +0.0033 | 0.9717 | 0.9995 |
+| Blur_sigma2.0 | 0.9333 | 1.0000 | +0.0033 | 0.9667 | 0.9996 |
+| Resize_0.5x | 0.9500 | 1.0000 | +0.0033 | 0.9750 | 0.9996 |
+| Resize_0.25x | 0.9467 | 1.0000 | +0.0033 | 0.9733 | 0.9991 |
+| Noise_sigma0.02 | 0.9633 | 0.9867 | -0.0100 | 0.9750 | 0.9989 |
+| Noise_sigma0.05 | 0.9267 | 0.9900 | -0.0067 | 0.9583 | 0.9970 |
+| Noise_sigma0.1 | 0.7967 | 0.9933 | -0.0033 | 0.8950 | 0.9894 |
+| ColorJitter_20pct | 0.9633 | 0.9933 | -0.0033 | 0.9783 | 0.9992 |
+| CenterCrop_80pct | 0.9400 | 1.0000 | +0.0033 | 0.9700 | 0.9989 |
+
+**Most damaging condition**: `Noise_sigma0.02` — F.Acc drops to 0.9867 (-0.0100 vs clean), while R.Acc=0.9633. 
+
 ## Limitations & what we'd improve with more time
 
 - Trained on a subsample of SID_Set (~3,000 images/class); the fully-synthetic
