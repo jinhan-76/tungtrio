@@ -1,0 +1,42 @@
+# Config tuned for free-tier Colab (single T4, 16GB VRAM, ~12h session limit)
+
+data:
+  root: data/
+  manifest: data/manifest.csv
+  image_size: 224
+
+model:
+  dinov2_model_name: facebook/dinov2-base   # ViT-B/14 (86M) — ViT-L OOMs/too slow on T4 in this budget
+  lora_r: 8
+  lora_alpha: 16
+  srm_feat_dim: 256
+  hidden_dim: 256
+
+train:
+  batch_size: 16
+  grad_accum_steps: 2        # effective batch size 32
+  num_workers: 2              # Colab CPU is limited; keep this low
+  epochs: 10
+  lr: 1.0e-4
+  weight_decay: 0.01
+  warmup_steps: 200
+  mixed_precision: fp16       # T4 supports fp16 well (no native bf16)
+  checkpoint_every_epoch: true
+  checkpoint_dir: checkpoints/
+  resume: true                 # auto-resumes from checkpoints/last.pt if present
+  log_every: 20
+
+augmentation:
+  # Parameters are FIXED to the organizer's required spec (see
+  # src/augmentations.py) — not tunable ranges. apply_prob and max_ops are
+  # the only knobs; max_ops=1 follows AIGIBench's finding that stacking
+  # multiple augmentations doesn't help and can hurt F.Acc specifically.
+  apply_prob: 0.7
+  max_ops: 1
+
+# Practical Colab notes:
+# - Cache resized images to Drive first (scripts/prepare_dataset.py) so you're
+#   not re-decoding + resizing full-resolution originals every epoch.
+# - Mount Drive and point checkpoint_dir at a Drive path so a disconnect
+#   doesn't lose your progress: e.g. /content/drive/MyDrive/ai-detector/checkpoints
+# - If you hit OOM: drop batch_size to 8 and raise grad_accum_steps to 4.
