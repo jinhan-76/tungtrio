@@ -1,0 +1,42 @@
+# Config for RTX 3090 (24GB VRAM, Ampere — bf16 supported natively).
+
+data:
+  root: data/
+  manifest: data/manifest.csv
+  image_size: 224
+
+model:
+  dinov2_model_name: facebook/dinov2-large   # ViT-L/14 (300M) — matches original plan
+  lora_r: 8
+  lora_alpha: 16
+  srm_feat_dim: 256
+  hidden_dim: 256
+
+train:
+  batch_size: 32           # conservative first run on a 24GB card; bump toward 48 if headroom
+  grad_accum_steps: 1
+  num_workers: 8
+  epochs: 12
+  lr: 1.0e-4
+  weight_decay: 0.01
+  warmup_steps: 300
+  mixed_precision: bf16       # use bf16 if your GPU supports it (Ampere+), else fp16
+  checkpoint_every_epoch: true
+  checkpoint_dir: checkpoints/
+  resume: true
+  log_every: 50
+
+augmentation:
+  # Parameters are FIXED to the organizer's required spec (see
+  # src/augmentations.py) — not tunable ranges. apply_prob and max_ops are
+  # the only knobs; max_ops=1 follows AIGIBench's finding that stacking
+  # multiple augmentations doesn't help and can hurt F.Acc specifically.
+  apply_prob: 0.7
+  max_ops: 1
+
+# Notes:
+# - With more VRAM/time budget, this is also where you'd raise per-class
+#   dataset size beyond the 2-3k/family used for the Colab-scoped run, and/or
+#   add more generator families for broader cross-generator generalization.
+# - If VRAM-constrained (<16GB): set model.dinov2_model_name to
+#   facebook/dinov2-base and reduce batch_size to 16-24.
